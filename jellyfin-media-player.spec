@@ -1,7 +1,7 @@
 %global         base_pkg_name jellyfin-media-player
 
 %define 		_disable_source_fetch 0
-%define			ver 1.11.0
+%define			ver 1.12.0
 
 Name:           %{base_pkg_name}
 Version:        %{ver}

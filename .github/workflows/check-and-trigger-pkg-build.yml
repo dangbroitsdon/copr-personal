@@ -62,7 +62,7 @@ jobs:
           fi
 
       - name: Replace Package Version in specfile
-      	if: steps.compare_pkgvers.outputs._jmp_match == 0 || steps.compare_pkgvers.outputs._wlcbp_match == 0
+        if: steps.compare_pkgvers.outputs._jmp_match == 0 || steps.compare_pkgvers.outputs._wlcbp_match == 0
         run: |
           if [ "${{ steps.compare_pkgvers.outputs._jmp_match }}" == "0" ]; then
           	sed -i "s/Version: .*/Version: ${{ steps.get_latest_pkgvers.outputs._latest_jmp_version }}/" jellyfin-media-player.spec

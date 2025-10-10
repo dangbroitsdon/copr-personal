@@ -1,7 +1,3 @@
-%global         latest_git_commit b18c359ed70e3aece0a56b0889fd0b6464b05b8f
-%global         shortened_git_commit %(c=%{latest_git_commit}; echo ${c:0:7})
-%global         date %(date +%Y%m%d)
-%global         hour %(date +%H)
 %global         base_pkg_name jellyfin-media-player
 
 %define _disable_source_fetch 0
@@ -12,9 +8,10 @@ Release:        1%{?dist}
 Summary:        Media Player for Jellyfin Media Server.
 Url:            https://github.com/jellyfin/%{base_pkg_name}
 Source0:        %{url}/archive/refs/tags/v%{version}.tar.gz
-License:        GPL-3.0-or-later
+License:        GPL-2.0-only
 
-BuildRequires: mpv-devel libcec-devel platform-devel SDL2-devel cmake git python g++ qt5-qtbase-devel qt5-qtbase-private-devel qt5-qtdeclarative-devel qt5-qtwebengine-devel qt5-qtx11extras-devel qt5-qtwebchannel-devel qt5-qtlocation-devel protobuf-devel libSM-devel libXext-devel libXrandr-devel minizip-ng-compat-devel
+BuildRequires: pkgconfig(Qt5Core) qt5-qtbase-private-devel pkgconfig(Qt5WebChannel) pkgconfig(Qt5WebEngineWidgets) pkgconfig(Qt5X11Extras) pkgconfig(libcec) pkgconfig(mpv) pkgconfig(sdl2)
+Requires: qt5-qtquickcontrols
 
 %description
 Media Player for Jellyfin Media Server.

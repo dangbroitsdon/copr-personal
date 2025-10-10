@@ -9,15 +9,15 @@
 Name:           %{base_pkg_name}
 Version:        1.12.0
 Release:        1%{?dist}
-Summary:        PDF viewer with a focus on textbooks and research papers.
+Summary:        Media Player for Jellyfin Media Server.
 Url:            https://github.com/jellyfin/%{base_pkg_name}
 Source0:        %{url}/archive/refs/tags/v%{version}.tar.gz
 License:        GPL-3.0-or-later
 
-BuildRequires: mpv-devel libcec-devel platform-devel SDL2-devel cmake git python g++ qt5-qtbase-devel qt5-qtbase-private-devel qt5-qtwebengine-devel qt5-qtx11extras-devel
+BuildRequires: mpv-devel libcec-devel platform-devel SDL2-devel cmake git python g++ qt5-qtbase-devel qt5-qtbase-private-devel qt5-qtdeclarative-devel qt5-qtwebengine-devel qt5-qtx11extras-devel qt5-qtwebchannel-devel qt5-qtlocation-devel protobuf-devel libSM-devel libXext-devel libXrandr-devel minizip-ng-compat-devel
 
 %description
-Sioyek is a PDF viewer with a focus on textbooks and research papers.
+Media Player for Jellyfin Media Server.
 
 %prep
 %autosetup -n %{base_pkg_name}-%{version}
@@ -37,29 +37,5 @@ Sioyek is a PDF viewer with a focus on textbooks and research papers.
 %{_datadir}/metainfo/com.github.iwalton3.jellyfin-media-player.appdata.xml
 
 %changelog
-* Sun Jul 27 2025 Donavan Campbell <vncvltvred@proton.me> - 3.0.0+20250727.13.8d173d9-2
-- build against mupdf 1.26 and minor change
-
-* Sat Apr 05 2025 Donavan Campbell <vncvltvred@proton.me> - 3.0.0+20250405.18.957f1dd-1
-- update versioning
-
-* Fri Apr 04 2025 Donavan Campbell <vncvltvred@proton.me> - 3.0.0+git3172c42-1
-- simple changes in line with fedora packaging guidelines
-
-* Mon Mar 31 2025 Donavan Campbell <vncvltvred@proton.me> - 3.0.0+git4ee8831-1
-- misc changes
-
-* Wed Mar 12 2025 Donavan Campbell <vncvltvred@proton.me> - 3.0.0+gitb3575d9-1
-- Further cleanup
-
-* Fri Feb 28 2025 Donavan Campbell <vncvltvred@proton.me> - 3.0.0+git986af1e-4
-- Cleanup build and file section
-
-* Wed Feb 26 2025 Donavan Campbell <vncvltvred@proton.me> - 3.0.0+git986af1e-3
-- Fix icon not being able to be replaced by papirus-icons
-
-* Tue Feb 25 2025 Donavan Campbell <vncvltvred@proton.me> - 3.0.0+git986af1e-2
-- Fix missing icon
-
-* Fri Feb 21 2025 Donavan Campbell <vncvltvred@proton.me> - 3.0.0+git986af1e-1
-- First release and initial testing
+* Thu Oct 9 2025 Donavan Campbell <vncvltvred@proton.me> - 1.12.0-1
+- initial package

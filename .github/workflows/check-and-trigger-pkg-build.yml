@@ -66,7 +66,9 @@ jobs:
         run: |
           if [ "${{ steps.compare_pkgvers.outputs._jmp_match }}" == "0" ]; then
           	sed -i "s/ver .*/ver ${{ steps.get_latest_pkgvers.outputs._latest_jmp_ver }}/" jellyfin-media-player.spec
-          elif [ "${{ steps.compare_pkgvers.outputs._wlcbp_match }}" == "0" ]; then
+          fi
+          
+          if [ "${{ steps.compare_pkgvers.outputs._wlcbp_match }}" == "0" ]; then
           	sed -i "s/ver .*/ver ${{ steps.get_latest_pkgvers.outputs._latest_wlcbp_ver }}/" wl-clip-persist.spec
           fi
 
@@ -105,7 +107,9 @@ jobs:
           EOF
           
           if [ "${{ needs.check-for-updates.outputs._jmp_match }}" == "0" ]; then
-            copr-cli buildscm --clone-url https://github.com/dangbroitsdon/copr_personal --subdir . --spec jellyfin-media-player.spec --nowait vncvltvred/personal
-          elif [ "${{ needs.check-for-updates.outputs._wlcbp_match }}" == "0" ]; then
-            copr-cli buildscm --clone-url https://github.com/dangbroitsdon/copr_personal --subdir . --spec wl-clip-persist.spec --nowait vncvltvred/personal
+            copr-cli buildscm --clone-url https://github.com/dangbroitsdon/copr-personal --subdir . --spec jellyfin-media-player.spec --nowait vncvltvred/personal
+          fi
+          
+          if [ "${{ needs.check-for-updates.outputs._wlcbp_match }}" == "0" ]; then
+            copr-cli buildscm --clone-url https://github.com/dangbroitsdon/copr-personal --subdir . --spec wl-clip-persist.spec --nowait vncvltvred/personal
           fi

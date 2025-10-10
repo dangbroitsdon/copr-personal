@@ -79,7 +79,6 @@ jobs:
       - name: Push updated package specfiles
         if: steps.compare_pkgvers.outputs._jmp_match == 0 || steps.compare_pkgvers.outputs._wlcbp_match == 0
         run: |
-          git add .
           git commit -am "Routine Package Update"
           git push
 

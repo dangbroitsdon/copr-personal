@@ -34,28 +34,28 @@ jobs:
       - name: Get Package Version
         id: get_current_pkgvers
         run: |
-          _current_jmp_version=$(cat jellyfin-media-player.spec | sed -n '6p' | cut -c17-)
-          _current_wlcbp_version=$(cat wl-clip-persist.spec | sed -n '9p' | cut -c17-)
+          _current_jmp_ver=$(cat jellyfin-media-player.spec | sed -n '6p' | cut -c17-)
+          _current_wlcbp_ver=$(cat wl-clip-persist.spec | sed -n '9p' | cut -c17-)
 
-          echo "_current_jmp_version=${_current_jmp_version}" >> $GITHUB_OUTPUT
-          echo "_current_wlcbp_version=${_current_wlcbp_version}" >> $GITHUB_OUTPUT
+          echo "_current_jmp_ver=${_current_jmp_ver}" >> $GITHUB_OUTPUT
+          echo "_current_wlcbp_ver=${_current_wlcbp_ver}" >> $GITHUB_OUTPUT
 
       - name: Compare Package Versions
         id: compare_pkgvers
         run: |
-          _current_jmp_version=${{ steps.get_current_pkgvers.outputs._current_jmp_version }}
-          _latest_jmp_version=${{ steps.get_latest_pkgvers.outputs._latest_jmp_ver }}
+          _current_jmp_ver=${{ steps.get_current_pkgvers.outputs._current_jmp_ver }}
+          _latest_jmp_ver=${{ steps.get_latest_pkgvers.outputs._latest_jmp_ver }}
 
-          _current_wlcbp_version=${{ steps.get_current_pkgvers.outputs._current_wlcbp_version }}
-          _latest_wlcbp_version=${{ steps.get_latest_pkgvers.outputs._latest_wlcbp_ver }}
+          _current_wlcbp_ver=${{ steps.get_current_pkgvers.outputs._current_wlcbp_ver }}
+          _latest_wlcbp_ver=${{ steps.get_latest_pkgvers.outputs._latest_wlcbp_ver }}
 
-          if [ "${_current_jmp_version}" == "${_latest_jmp_version}" ]; then
+          if [ "${_current_jmp_ver}" == "${_latest_jmp_ver}" ]; then
             echo "_jmp_match=1" >> $GITHUB_OUTPUT
           else
             echo "_jmp_match=0" >> $GITHUB_OUTPUT
           fi
           
-          if [ "${_current_wlcbp_version}" == "${_latest_wlcbp_version}" ]; then
+          if [ "${_current_wlcbp_ver}" == "${_latest_wlcbp_ver}" ]; then
             echo "_wlcbp_match=1" >> $GITHUB_OUTPUT
           else
             echo "_wlcbp_match=0" >> $GITHUB_OUTPUT
@@ -65,11 +65,11 @@ jobs:
         if: steps.compare_pkgvers.outputs._jmp_match == 0 || steps.compare_pkgvers.outputs._wlcbp_match == 0
         run: |
           if [ "${{ steps.compare_pkgvers.outputs._jmp_match }}" == "0" ]; then
-          	sed -i "s/Version: .*/Version: ${{ steps.get_latest_pkgvers.outputs._latest_jmp_version }}/" jellyfin-media-player.spec
+          	sed -i "s/Version: .*/Version: ${{ steps.get_latest_pkgvers.outputs._latest_jmp_ver }}/" jellyfin-media-player.spec
           elif [ "${{ steps.compare_pkgvers.outputs._wlcbp_match }}" == "0" ]; then
-          	sed -i "s/Version: .*/Version: ${{ steps.get_latest_pkgvers.outputs._latest_wlcbp_version }}/" wl-clip-persist.spec
+          	sed -i "s/Version: .*/Version: ${{ steps.get_latest_pkgvers.outputs._latest_wlcbp_ver }}/" wl-clip-persist.spec
           fi
- 
+
       - name: Push JellyfinMediaPlayer specfile update
         if: steps.compare_pkgvers.outputs._jmp_match == 0
         uses: wranders/commit-action@v0
@@ -79,6 +79,12 @@ jobs:
           message: "Update jellyfin-media-player package"
           files: |
             jellyfin-media-player.spec
+
+      - name: Pull updated repo
+        if: steps.compare_pkgvers.outputs._jmp_match == 0 || steps.compare_pkgvers.outputs._wlcbp_match == 0
+        run: |
+          git pull
+
       - name: Push wl-clip-persist specfile update
         if: steps.compare_pkgvers.outputs._wlcbp_match == 0
         uses: wranders/commit-action@v0

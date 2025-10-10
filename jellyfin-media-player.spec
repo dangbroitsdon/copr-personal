@@ -3,7 +3,7 @@
 %define _disable_source_fetch 0
 
 Name:           %{base_pkg_name}
-Version: 
+Version:        1.11.0
 Release:        1%{?dist}
 Summary:        Media Player for Jellyfin Media Server.
 Url:            https://github.com/jellyfin/%{base_pkg_name}

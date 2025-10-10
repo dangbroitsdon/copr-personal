@@ -8,7 +8,7 @@ Release:        1%{?dist}
 Summary:        Media Player for Jellyfin Media Server.
 Url:            https://github.com/jellyfin/%{base_pkg_name}
 Source0:        %{url}/archive/refs/tags/v%{version}.tar.gz
-SourceLicense:  GPL-2.0-only
+License:  GPL-2.0-only
 
 BuildRequires: pkgconfig(Qt5Core) qt5-qtbase-private-devel pkgconfig(Qt5WebChannel) pkgconfig(Qt5WebEngineWidgets) pkgconfig(Qt5X11Extras) pkgconfig(libcec) pkgconfig(mpv) pkgconfig(sdl2)
 Requires: qt5-qtquickcontrols

@@ -34,8 +34,8 @@ jobs:
       - name: Get Package Version
         id: get_current_pkgvers
         run: |
-          _current_jmp_ver=$(cat jellyfin-media-player.spec | sed -n '6p' | cut -c17-)
-          _current_wlcbp_ver=$(cat wl-clip-persist.spec | sed -n '9p' | cut -c17-)
+          _current_jmp_ver=$(cat jellyfin-media-player.spec | sed -n '4p' | cut -c17-)
+          _current_wlcbp_ver=$(cat wl-clip-persist.spec | sed -n '7p' | cut -c17-)
 
           echo "_current_jmp_ver=${_current_jmp_ver}" >> $GITHUB_OUTPUT
           echo "_current_wlcbp_ver=${_current_wlcbp_ver}" >> $GITHUB_OUTPUT
@@ -65,35 +65,23 @@ jobs:
         if: steps.compare_pkgvers.outputs._jmp_match == 0 || steps.compare_pkgvers.outputs._wlcbp_match == 0
         run: |
           if [ "${{ steps.compare_pkgvers.outputs._jmp_match }}" == "0" ]; then
-          	sed -i "s/Version: .*/Version: ${{ steps.get_latest_pkgvers.outputs._latest_jmp_ver }}/" jellyfin-media-player.spec
+          	sed -i "s/ver .*/ver ${{ steps.get_latest_pkgvers.outputs._latest_jmp_ver }}/" jellyfin-media-player.spec
           elif [ "${{ steps.compare_pkgvers.outputs._wlcbp_match }}" == "0" ]; then
-          	sed -i "s/Version: .*/Version: ${{ steps.get_latest_pkgvers.outputs._latest_wlcbp_ver }}/" wl-clip-persist.spec
+          	sed -i "s/ver .*/ver ${{ steps.get_latest_pkgvers.outputs._latest_wlcbp_ver }}/" wl-clip-persist.spec
           fi
 
-      - name: Push JellyfinMediaPlayer specfile update
-        if: steps.compare_pkgvers.outputs._jmp_match == 0
-        uses: wranders/commit-action@v0
-        with:
-          repository: ${{ github.repository }}
-          token: ${{ secrets.GITHUB_TOKEN }}
-          message: "Update jellyfin-media-player package"
-          files: |
-            jellyfin-media-player.spec
+      - name: Configure git
+        if: steps.compare_pkgvers.outputs._jmp_match == 0 || steps.compare_pkgvers.outputs._wlcbp_match == 0
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-      - name: Pull updated repo
+      - name: Push updated package specfiles
         if: steps.compare_pkgvers.outputs._jmp_match == 0 || steps.compare_pkgvers.outputs._wlcbp_match == 0
         run: |
           git pull
-
-      - name: Push wl-clip-persist specfile update
-        if: steps.compare_pkgvers.outputs._wlcbp_match == 0
-        uses: wranders/commit-action@v0
-        with:
-          repository: ${{ github.repository }}
-          token: ${{ secrets.GITHUB_TOKEN }}
-          message: "Update wl-clip-persist package"
-          files: |
-            wl-clip-persist.spec
+          git commit -m "Routine Package Update"
+          git push
 
   trigger-copr-builds:
     runs-on: ubuntu-latest

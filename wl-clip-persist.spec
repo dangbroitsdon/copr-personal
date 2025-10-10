@@ -4,9 +4,10 @@
 %global         base_pkg_name wl-clip-persist
 
 %define 		_disable_source_fetch 0
+%define 		ver 0.5.0
 
 Name:           %{base_pkg_name}
-Version:        0.4.0
+Version:        %{ver}
 Release:        1%{?dist}
 Summary:        Keep clipboard after program closes in wayland
 License:  		MIT

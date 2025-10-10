@@ -1,9 +1,10 @@
 %global         base_pkg_name jellyfin-media-player
 
-%define _disable_source_fetch 0
+%define 		_disable_source_fetch 0
+%define			ver 1.11.0
 
 Name:           %{base_pkg_name}
-Version: 1.12.0
+Version:        %{ver}
 Release:        1%{?dist}
 Summary:        Media Player for Jellyfin Media Server.
 Url:            https://github.com/jellyfin/%{base_pkg_name}

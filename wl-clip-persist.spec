@@ -4,7 +4,7 @@
 %global         base_pkg_name wl-clip-persist
 
 %define 		_disable_source_fetch 0
-%define 		ver 0.5.0
+%define 		ver 0.4.0
 
 Name:           %{base_pkg_name}
 Version:        %{ver}

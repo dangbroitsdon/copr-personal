@@ -34,8 +34,8 @@ jobs:
       - name: Get Package Version
         id: get_current_pkgvers
         run: |
-          _current_jmp_ver=$(cat jellyfin-media-player.spec | sed -n '4p' | cut -c17-)
-          _current_wlcbp_ver=$(cat wl-clip-persist.spec | sed -n '7p' | cut -c17-)
+          _current_jmp_ver=$(cat jellyfin-media-player.spec | sed -n '4p' | cut -c15-)
+          _current_wlcbp_ver=$(cat wl-clip-persist.spec | sed -n '7p' | cut -c15-)
 
           echo "_current_jmp_ver=${_current_jmp_ver}" >> $GITHUB_OUTPUT
           echo "_current_wlcbp_ver=${_current_wlcbp_ver}" >> $GITHUB_OUTPUT
@@ -79,8 +79,8 @@ jobs:
       - name: Push updated package specfiles
         if: steps.compare_pkgvers.outputs._jmp_match == 0 || steps.compare_pkgvers.outputs._wlcbp_match == 0
         run: |
-          git pull
-          git commit -m "Routine Package Update"
+          git add .
+          git commit -am "Routine Package Update"
           git push
 
   trigger-copr-builds:

@@ -1,0 +1,118 @@
+name: Check and Trigger Package Builds (COPR)
+# this will eventually be cleaned up when more pkgs are added
+
+on:
+  schedule:
+      - cron: '0 16 * * *'
+  workflow_dispatch:
+
+jobs:
+  check-for-updates:
+    runs-on: ubuntu-latest
+
+    outputs:
+      _jmp_match: ${{ steps.compare_pkgvers.outputs._jmp_match }}
+      _wlcbp_match: ${{ steps.compare_pkgvers.outputs._wlcbp_match }}
+
+    steps:
+      - name: Checkout master
+        uses: actions/checkout@v4
+
+      - name: Get Latest Package Versions
+        id: get_latest_pkgvers
+        run: |
+          _jmp_tags=($(git -c 'versionsort.suffix=-' \
+            ls-remote --exit-code --refs --sort='version:refname' --tags https://github.com/jellyfin/jellyfin-media-player '*.*' \
+            | cut --delimiter='/' --fields=3))
+          echo "_latest_jmp_ver=$(echo ${_jmp_tags[-1]} | cut -c2-)" >> $GITHUB_OUTPUT
+          
+          _wlcbp_tags=($(git -c 'versionsort.suffix=-' \
+            ls-remote --exit-code --refs --sort='version:refname' --tags https://github.com/Linus789/wl-clip-persist '*.*' \
+            | cut --delimiter='/' --fields=3))
+          echo "_latest_wlcbp_ver=$(echo ${_wlcbp_tags[-1]} | cut -c2-)" >> $GITHUB_OUTPUT
+
+      - name: Get Package Version
+        id: get_current_pkgvers
+        run: |
+          _current_jmp_version=$(cat jellyfin-media-player.spec | sed -n '6p' | cut -c17-)
+          _current_wlcbp_version=$(cat wl-clip-persist.spec | sed -n '9p' | cut -c17-)
+
+          echo "_current_jmp_version=${_current_jmp_version}" >> $GITHUB_OUTPUT
+          echo "_current_wlcbp_version=${_current_wlcbp_version}" >> $GITHUB_OUTPUT
+
+      - name: Compare Package Versions
+        id: compare_pkgvers
+        run: |
+          _current_jmp_version=${{ steps.get_current_pkgvers.outputs._current_jmp_version }}
+          _latest_jmp_version=${{ steps.get_latest_pkgvers.outputs._latest_jmp_ver }}
+
+          _current_wlcbp_version=${{ steps.get_current_pkgvers.outputs._current_wlcbp_version }}
+          _latest_wlcbp_version=${{ steps.get_latest_pkgvers.outputs._latest_wlcbp_ver }}
+
+          if [ "${_current_jmp_version}" == "${_latest_jmp_version}" ]; then
+            echo "_jmp_match=1" >> $GITHUB_OUTPUT
+          else
+            echo "_jmp_match=0" >> $GITHUB_OUTPUT
+          fi
+          
+          if [ "${_current_wlcbp_version}" == "${_latest_wlcbp_version}" ]; then
+            echo "_wlcbp_match=1" >> $GITHUB_OUTPUT
+          else
+            echo "_wlcbp_match=0" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Replace Package Version in specfile
+      	if: steps.compare_pkgvers.outputs._jmp_match == 0 || steps.compare_pkgvers.outputs._wlcbp_match == 0
+        run: |
+          if [ "${{ steps.compare_pkgvers.outputs._jmp_match }}" == "0" ]; then
+          	sed -i "s/Version: .*/Version: ${{ steps.get_latest_pkgvers.outputs._latest_jmp_version }}/" jellyfin-media-player.spec
+          elif [ "${{ steps.compare_pkgvers.outputs._wlcbp_match }}" == "0" ]; then
+          	sed -i "s/Version: .*/Version: ${{ steps.get_latest_pkgvers.outputs._latest_wlcbp_version }}/" wl-clip-persist.spec
+          fi
+ 
+      - name: Push JellyfinMediaPlayer specfile update
+        if: steps.compare_pkgvers.outputs._jmp_match == 0
+        uses: wranders/commit-action@v0
+        with:
+          repository: ${{ github.repository }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          message: "Update jellyfin-media-player package"
+          files: |
+            jellyfin-media-player.spec
+      - name: Push wl-clip-persist specfile update
+        if: steps.compare_pkgvers.outputs._wlcbp_match == 0
+        uses: wranders/commit-action@v0
+        with:
+          repository: ${{ github.repository }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          message: "Update wl-clip-persist package"
+          files: |
+            wl-clip-persist.spec
+
+  trigger-copr-builds:
+    runs-on: ubuntu-latest
+    container: fedora:latest
+
+    needs: [check-for-updates]
+    if: needs.check-for-updates.outputs._jmp_match == 0 || needs.check-for-update.outputs._wlcbp_match == 0
+
+    steps:
+      - name: Install copr-cli package
+        run: dnf install -y copr-cli
+
+      - name: Trigger COPR Builds
+        run: |
+          mkdir ~/.config
+          tee ~/.config/copr > /dev/null <<EOF
+          [copr-cli]
+          login = ${{ secrets.COPR_LOGIN }}
+          username = vncvltvred
+          token = ${{ secrets.COPR_TOKEN }}
+          copr_url = https://copr.fedorainfracloud.org
+          EOF
+          
+          if [ "${{ needs.check-for-updates.outputs._jmp_match }}" == "0" ]; then
+            copr-cli buildscm --clone-url https://github.com/dangbroitsdon/copr_personal --subdir . --spec jellyfin-media-player.spec --nowait vncvltvred/personal
+          elif [ "${{ needs.check-for-updates.outputs._wlcbp_match }}" == "0" ]; then
+            copr-cli buildscm --clone-url https://github.com/dangbroitsdon/copr_personal --subdir . --spec wl-clip-persist.spec --nowait vncvltvred/personal
+          fi

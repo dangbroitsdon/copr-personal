@@ -1,5 +1,6 @@
 import os
 import re
+
 from compare_versions import is_new_version_available
 from specfile import Specfile
 from ghapi.all import GhApi

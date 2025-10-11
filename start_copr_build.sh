@@ -1,6 +1,7 @@
 git config --global user.name "github-actions[bot]"
 git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
 git commit -am "update: $1"
+git push
 
 mkdir ~/.config
 

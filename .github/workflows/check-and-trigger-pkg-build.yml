@@ -19,7 +19,7 @@ jobs:
         uses: actions/checkout@v4
         
       - name: Install packages
-        run: dnf install -y copr-cli python3 git
+        run: dnf install -y copr-cli python3 python3-pip git
         
       - name: Check for Update and Trigger Build
         run: |

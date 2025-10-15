@@ -23,5 +23,5 @@ jobs:
         
       - name: Check for Update and Trigger Build
         run: |
-          pip install ghapi enhanced_versioning specfile
+          pip install semantic_version specfile
           python update_packages.py

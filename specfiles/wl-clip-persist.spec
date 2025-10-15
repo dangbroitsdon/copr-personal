@@ -9,7 +9,7 @@ Version:        0.5.0
 Release:        1%{?dist}
 Summary:        Keep clipboard after program closes in wayland
 License:  		MIT
-URL:            https://github.com/Linus789/%{name}
+URL:            https://github.com/Linus789/wl-clip-persist
 Source:         %{url}/archive/refs/tags/v%{version}.tar.gz
 
 BuildRequires:  cargo gcc glibc
@@ -27,14 +27,12 @@ cargo fetch --target x86_64-unknown-linux-gnu
 cargo build --release --all-features
 
 %install
-install -Dm 755 target/release/%{base_pkg_name} "%{buildroot}%{_bindir}/%{base_pkg_name}"
-install -Dm 644 README.md "%{buildroot}%{_datadir}/doc/%{base_pkg_name}/README.md"
-install -Dm 644 LICENSE "%{buildroot}%{_datadir}/licenses/%{base_pkg_name}/LICENSE"
+install -Dm 755 target/release/%{name} "%{buildroot}%{_bindir}/%{name}"
 
 %files
 %license LICENSE
 %doc README.md
-%{_bindir}/%{base_pkg_name}
+%{_bindir}/%{name}
 
 %changelog
 %autochangelog

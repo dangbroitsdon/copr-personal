@@ -19,7 +19,7 @@ for i in os.scandir("specfiles/"):
 
     if Version(latest_version) > Version(specfile_ver):
         print(f"new update available for {specfile_filename}, latest version: {latest_version}, current version: {specfile_ver}")
-        specfile.version = repo_tags[-1]
+        specfile.version = latest_version
         subprocess.run(f"./start_copr_build.sh {specfile_filename}")
         continue
 
